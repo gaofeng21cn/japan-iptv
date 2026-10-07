@@ -1,6 +1,11 @@
 import http.server
+import io
+import json
+from pathlib import Path
+import tempfile
 import threading
 import unittest
+from contextlib import redirect_stdout
 from unittest.mock import patch
 import maintain
 
@@ -57,6 +62,37 @@ class PlaybackFailures(unittest.TestCase):
         with patch.object(maintain.shutil, 'which', return_value=None):
             with self.assertRaises(ValueError):
                 maintain.media_info(b'not a video')
+
+    def test_channel_audit_counts_labels_without_claiming_playback(self):
+        body = (
+            '#EXTM3U\n'
+            '#EXTINF:-1,NHK G\nhttp://example.test/nhkg\n'
+            '#EXTINF:-1,NHK E\nhttp://example.test/nhke\n'
+            '#EXTINF:-1,TBS\nhttp://example.test/tbs\n'
+        ).encode()
+        rows, coverage, hosts, risky = maintain.source_coverage(body)
+        self.assertEqual(len(rows), 3)
+        self.assertEqual(coverage['NHK G'], 1)
+        self.assertEqual(coverage['NHK E'], 1)
+        self.assertEqual('example.test' in hosts, True)
+        self.assertEqual(risky, 0)
+
+    def test_baseline_audit_does_not_label_http_success_as_playback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'sources.json').write_text(json.dumps([{
+                'name': 'fixture', 'url': 'http://fixture.test/list.m3u',
+                'kind': 'test', 'enabled': True,
+            }]))
+            with patch.object(maintain, 'ROOT', root), \
+                 patch.object(maintain, 'curl_fetch',
+                              return_value=(b'#EXTM3U\n#EXTINF:-1,TBS\nhttp://example.test/tbs\n',
+                                             'http://fixture.test/list.m3u')):
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(maintain.audit('test'), 0)
+            report = json.loads((root / 'reports' / 'baseline-audit.json').read_text())
+            self.assertTrue(report['sources'][0]['ok'])
+            self.assertIn('not playback', report['scope'])
 
 
 if __name__ == '__main__':

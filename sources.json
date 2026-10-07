@@ -2,16 +2,78 @@
   {
     "name": "Free-TV/IPTV",
     "url": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
-    "role": "商业地上波候选基线；逐台验证，NTV/NHK E 旧链接当前返回验证页。"
-  },
-  {
-    "name": "skinred78/jp-iptv-epg",
-    "url": "https://skinred78.github.io/jp-iptv-epg/jp-playlist.m3u",
-    "role": "保留当前可用的 NHK G 1080 线路；Render 中转当前 404，原 EPG 已过期。"
+    "kind": "community",
+    "enabled": true,
+    "role": "Broad community baseline with a small Japanese terrestrial section; verify each stream because stale entries return an interstitial."
   },
   {
     "name": "iptv-org/iptv",
     "url": "https://iptv-org.github.io/iptv/countries/jp.m3u",
-    "role": "公开频道与 NHK G 备用候选；当前不足以覆盖完整地上波。"
+    "kind": "community",
+    "enabled": true,
+    "role": "Large cross-country catalog. Useful for official FAST and news streams, but not a complete Japanese terrestrial source."
+  },
+  {
+    "name": "skinred78/jp-iptv-epg",
+    "url": "https://skinred78.github.io/jp-iptv-epg/jp-playlist.m3u",
+    "kind": "community",
+    "enabled": true,
+    "role": "Large Japanese aggregation used by the original recommendation. It mixes a reliable NHK G feed with many stale Render relays."
+  },
+  {
+    "name": "MrKagesan/JP-IPTV",
+    "url": "https://raw.githubusercontent.com/MrKagesan/JP-IPTV/main/JP.m3u",
+    "kind": "aggregator",
+    "enabled": true,
+    "role": "Broad Japanese terrestrial, BS, and CS aggregation. Its first-level playlist is available, but several child manifests returned 403 during the 2026-10-08 Home test."
+  },
+  {
+    "name": "rloim024/IPTV-jp",
+    "url": "https://raw.githubusercontent.com/rloim024/IPTV-jp/main/jp.m3u",
+    "kind": "aggregator",
+    "enabled": true,
+    "role": "Broad Japanese aggregation with good nominal channel coverage. Most primary lines share the same third-party relay, so this is a coverage baseline rather than an independent source."
+  },
+  {
+    "name": "Jsan-PC/IPTV_JP",
+    "url": "https://raw.githubusercontent.com/Jsan-PC/IPTV_JP/main/jp.m3u",
+    "kind": "aggregator",
+    "enabled": true,
+    "role": "Utako-derived Japanese aggregation with many aliases. Treat repeated URLs as one upstream rather than separate fallbacks."
+  },
+  {
+    "name": "koneMorris1625/iptvNippon",
+    "url": "https://raw.githubusercontent.com/koneMorris1625/iptvNippon/main/playlist.m3u",
+    "kind": "aggregator",
+    "enabled": true,
+    "role": "Primehome-heavy Japanese aggregation. Useful for testing the primehome upstream separately from community mirrors."
+  },
+  {
+    "name": "DimaSvitenko2009/IPTV-JP",
+    "url": "https://raw.githubusercontent.com/DimaSvitenko2009/IPTV-JP/main/JPIPTV.m3u",
+    "kind": "aggregator",
+    "enabled": true,
+    "role": "Small Primehome-heavy list retained as a historical baseline. Upstream activity is stale."
+  },
+  {
+    "name": "ytpit20218/Japan-IPTV",
+    "url": "https://raw.githubusercontent.com/ytpit20218/Japan-IPTV/main/jp.m3u",
+    "kind": "legacy",
+    "enabled": true,
+    "role": "Old luongz-derived list. Numeric IP streams are useful only as a legacy comparison and require separate Home validation."
+  },
+  {
+    "name": "tocotoco0013/japan-iptv-m3u8",
+    "url": "https://raw.githubusercontent.com/tocotoco0013/japan-iptv-m3u8/main/Japan.m3u8",
+    "kind": "legacy",
+    "enabled": false,
+    "role": "Disabled after returning 404 during the 2026-10-08 baseline pass."
+  },
+  {
+    "name": "vovanlocpro/IPTV-JPN",
+    "url": "https://raw.githubusercontent.com/vovanlocpro/IPTV-JPN/main/IPTV.japan.byvovanloc.m3u",
+    "kind": "legacy",
+    "enabled": false,
+    "role": "Disabled because the published playlist resolves to a single generic Utako entry and does not cover the curated channels."
   }
 ]

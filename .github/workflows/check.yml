@@ -1,4 +1,4 @@
-name: 检查精选列表
+name: Validate curated playlist
 on:
   push:
   pull_request:
@@ -13,19 +13,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: 核对列表并验证失败场景
+      - name: Verify generated playlist and negative playback cases
         run: |
           python3 scripts/maintain.py build --verify
           python3 -m unittest discover -s scripts -p 'test_*.py'
-      - name: 安装视频探针
+      - name: Audit enabled baselines
+        run: python3 scripts/maintain.py audit
+      - name: Install media probe
         if: github.event_name == 'workflow_dispatch'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - name: GitHub 出口在线检测
+      - name: GitHub-hosted stream check
         if: github.event_name == 'workflow_dispatch'
         run: python3 scripts/maintain.py check --site github
       - uses: actions/upload-artifact@v4
         if: always() && github.event_name == 'workflow_dispatch'
         with:
           name: github-stream-health
-          path: reports/health.json
+          path: |
+            reports/health.json
+            reports/baseline-audit.json
           if-no-files-found: ignore

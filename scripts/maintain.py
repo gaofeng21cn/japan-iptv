@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """构建精选列表、发现上游候选、检测视频。检测不会自动换源。"""
 import argparse
+import collections
 import concurrent.futures
 import datetime
 import json
@@ -15,6 +16,24 @@ import urllib.parse
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
+JAPAN_CHANNELS = {
+    "NHK G": r"NHK\s*(?:G|総合|综合)|JOAK",
+    "NHK E": r"NHK\s*(?:E|Eテレ|教育)|JOAB",
+    "NTV": r"(?:NTV|日テレ|日本テレビ|Nippon TV)",
+    "TBS": r"TBS|JORX",
+    "Fuji": r"Fuji|フジ|富士|JOCX",
+    "TV Asahi": r"(?:TV Asahi|テレビ朝日|朝日)|JOEX",
+    "TV Tokyo": r"(?:TV Tokyo|テレビ東京|テレ東)|JOTX",
+    "TOKYO MX": r"(?:TOKYO\s*MX|東京MX|tokyo_mx)",
+}
+HIGH_RISK_RELAYS = (
+    "ayaka-proxy.onrender.com",
+    "akariko.netgenx.site",
+    "naori-test.netgenx.site",
+    "proxyv2.utako.moe",
+    "stream01.willfonk.com",
+    "ythls-v3.onrender.com",
+)
 
 
 def load_channels():
@@ -78,6 +97,73 @@ def parse_m3u(text):
             rows.append({"name": info.rsplit(",", 1)[-1], "url": line, "metadata": info})
             info = None
     return rows
+
+
+def source_coverage(body):
+    text = body.decode() if isinstance(body, bytes) else body
+    rows = parse_m3u(text)
+    coverage = {
+        name: sum(bool(re.search(pattern, row["name"], re.I)) for row in rows)
+        for name, pattern in JAPAN_CHANNELS.items()
+    }
+    hosts = collections.Counter(urllib.parse.urlsplit(row["url"]).hostname for row in rows)
+    hosts = {host: count for host, count in hosts.items() if host}
+    risky = sum(count for host, count in hosts.items()
+                if any(relay in host for relay in HIGH_RISK_RELAYS))
+    return rows, coverage, hosts, risky
+
+
+def curl_fetch(url, limit=12_000_000):
+    curl = shutil.which("curl")
+    if not curl:
+        raise ValueError("缺少 curl，无法执行基线审计")
+    result = subprocess.run(
+        [curl, "-fsSL", "--connect-timeout", "8", "--max-time", "25",
+         "--max-filesize", str(limit), "-A", "Mozilla/5.0", url],
+        capture_output=True,
+    )
+    if result.returncode:
+        raise ValueError(f"curl 读取失败（退出码 {result.returncode}）")
+    return result.stdout, url
+
+
+def audit(site):
+    sources = json.loads((ROOT / "sources.json").read_text())
+    results = []
+    for source in sources:
+        row = {key: source.get(key) for key in ("name", "url", "kind", "enabled", "role")}
+        if not source.get("enabled", True):
+            row["skipped"] = "disabled"
+            results.append(row)
+            continue
+        try:
+            body, _ = curl_fetch(source["url"])
+            if not body.lstrip().startswith(b"#EXTM3U"):
+                raise ValueError("上游没有返回 M3U")
+            rows, coverage, hosts, risky = source_coverage(body)
+            row.update({
+                "ok": True,
+                "entries": len(rows),
+                "coverage": coverage,
+                "coverage_score": sum(bool(v) for v in coverage.values())
+                + sum(v > 1 for v in coverage.values()),
+                "top_hosts": collections.Counter(hosts).most_common(8),
+                "high_risk_relay_entries": risky,
+            })
+        except Exception as e:
+            row.update({"ok": False, "error": safe_error(e)})
+        results.append(row)
+    report = {
+        "checked_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "site": site,
+        "scope": "First-level playlist and channel-label audit; not playback, continuity, or content verification.",
+        "sources": results,
+    }
+    save_report("baseline-audit.json", report)
+    for row in results:
+        state = "skipped" if row.get("skipped") else ("ok" if row.get("ok") else row.get("error"))
+        print(f"{row['name']}: {state}", flush=True)
+    return 0 if all(row.get("ok") or row.get("skipped") for row in results) else 1
 
 
 def discover():
@@ -198,7 +284,7 @@ def check(site):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("build", "check", "discover"))
+    parser.add_argument("command", choices=("build", "check", "discover", "audit"))
     parser.add_argument("--verify", action="store_true", help="只检查生成文件一致性")
     parser.add_argument("--site", default="local-unqualified", help="检测地点；home 需显式代理")
     args = parser.parse_args()
@@ -206,6 +292,8 @@ def main():
         build(args.verify)
     elif args.command == "discover":
         discover()
+    elif args.command == "audit":
+        return audit(args.site)
     else:
         return check(args.site)
     return 0
