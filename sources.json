@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Free-TV/IPTV",
+    "url": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
+    "role": "商业地上波候选基线；逐台验证，NTV/NHK E 旧链接当前返回验证页。"
+  },
+  {
+    "name": "skinred78/jp-iptv-epg",
+    "url": "https://skinred78.github.io/jp-iptv-epg/jp-playlist.m3u",
+    "role": "保留当前可用的 NHK G 1080 线路；Render 中转当前 404，原 EPG 已过期。"
+  },
+  {
+    "name": "iptv-org/iptv",
+    "url": "https://iptv-org.github.io/iptv/countries/jp.m3u",
+    "role": "公开频道与 NHK G 备用候选；当前不足以覆盖完整地上波。"
+  }
+]

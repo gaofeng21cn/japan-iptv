@@ -1,0 +1,81 @@
+{
+  "tested_at": "2026-10-07T23:32:41.472697+00:00",
+  "network": "Home OpenWrt + Mihomo，当前规则出口为日本",
+  "method": "通过 Home 已有代理端口读取，每路连续解码约 90 秒；视频分片 ffprobe；抽样画面人工核对。",
+  "limit": "并非 Apple TV/APTV 实机播放验收，也不是跨时段长期稳定性验证。部分连接重试后完成。",
+  "channels": [
+    {
+      "name": "NHK G",
+      "exit": 0,
+      "decoded_seconds": 90.023,
+      "wall_seconds": 90.93,
+      "warning_lines": 28
+    },
+    {
+      "name": "NHK総合 (東京)",
+      "exit": 0,
+      "decoded_seconds": 90.0,
+      "wall_seconds": 78.04,
+      "warning_lines": 8
+    },
+    {
+      "name": "テレビ朝日",
+      "exit": 0,
+      "decoded_seconds": 90.0,
+      "wall_seconds": 84.29,
+      "warning_lines": 4
+    },
+    {
+      "name": "TBSテレビ",
+      "exit": 0,
+      "decoded_seconds": 90.0,
+      "wall_seconds": 80.4,
+      "warning_lines": 0
+    },
+    {
+      "name": "テレビ東京",
+      "exit": 0,
+      "decoded_seconds": 90.0,
+      "wall_seconds": 76.23,
+      "warning_lines": 4
+    },
+    {
+      "name": "フジテレビ",
+      "exit": 0,
+      "decoded_seconds": 90.0,
+      "wall_seconds": 82.2,
+      "warning_lines": 4
+    },
+    {
+      "name": "NTV",
+      "exit": 0,
+      "decoded_seconds": 90.0,
+      "wall_seconds": 81.35,
+      "warning_lines": 4
+    }
+  ],
+  "epg": {
+    "old_url": "https://skinred78.github.io/jp-iptv-epg/jp-epg-merged.xml",
+    "last_programme_stop": "2026-08-18 06:00:00 +0900",
+    "included": false
+  },
+  "content_review": {
+    "accepted": [
+      "NHK総合 東京",
+      "テレビ朝日",
+      "TBS",
+      "テレビ東京"
+    ],
+    "excluded": {
+      "日本テレビ": "隔数分钟抽样仍停在同一 7:32 旧广告画面，虽然播放列表序号增长。",
+      "フジテレビ": "多次抽样仍显示中转商广告，虽然播放列表序号增长。"
+    },
+    "note": "排除内容审核未通过的线路；短时连续解码结果保留供追溯。"
+  },
+  "quick_checker": {
+    "checked_at": "2026-10-07T23:38:03.058905+00:00",
+    "tested_lines": 7,
+    "readable_lines": 7,
+    "scope": "短时视频读取；两条内容未通过的线路已从主订阅剔除。"
+  }
+}
