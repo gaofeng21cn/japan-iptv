@@ -18,13 +18,14 @@ https://raw.githubusercontent.com/gaofeng21cn/japan-iptv/main/playlist.m3u
 | 频道 | 画质 | 列表来源 |
 | --- | --- | --- |
 | NHK総合 東京 | 1080p | skinred78/jp-iptv-epg |
+| NHK総合 東京 备用 | 540p | Free-TV/IPTV |
+| 日本テレビ | 540p | 公开来源 |
 | テレビ朝日 | 540p | Free-TV/IPTV |
 | TBS | 540p | Free-TV/IPTV |
 | テレビ東京 | 540p | Free-TV/IPTV |
+| フジテレビ | 540p | Free-TV/IPTV |
 
-另提供一条来自 Free-TV/IPTV 的 NHK総合 東京 540p 备用线路，位于播放器的“备用”分组。主线路播放不畅时，可以切换到备用线路。
-
-当前共收录 4 个频道、5 条线路。频道范围和线路会随上游可用情况调整，以实际订阅列表为准。
+当前共收录 6 个频道、7 条线路，其中 1 条位于“备用”分组。频道和线路以实际订阅列表为准。
 <!-- CHANNELS:END -->
 
 ## 维护方式
