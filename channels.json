@@ -93,11 +93,8 @@
       "source": "https://mov3.co/embedntv.html",
       "resolution": "960×540",
       "fps": "25",
-      "notes": [
-        "能解码，但多次画面抽样仍为同一广告或中转广告，当前不满足精选频道内容验收。"
-      ],
-      "transport": "hls",
-      "status": "candidate"
+      "notes": [],
+      "transport": "hls"
     },
     {
       "id": "JOCXDTV.jp",
@@ -107,11 +104,8 @@
       "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
       "resolution": "960×540",
       "fps": "25",
-      "notes": [
-        "能解码，但多次画面抽样仍为同一广告或中转广告，当前不满足精选频道内容验收。"
-      ],
-      "transport": "hls",
-      "status": "candidate"
+      "notes": [],
+      "transport": "hls"
     }
   ]
 }
