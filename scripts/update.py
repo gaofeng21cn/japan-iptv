@@ -130,7 +130,11 @@ def probe_auto(row):
         transport = "hls" if start.lstrip().startswith(b"#EXTM3U") else "mpegts"
         return probe_auto(dict(row, transport=transport))
     if result["ok"]:
-        if result.get("slow_segments", 0):
+        # 播放器缓冲可吸收单个分片的抖动；判断样本的总读取速率。
+        if result["transport"] == "hls" and (
+            result["media_seconds"] <= 0
+            or result["read_seconds"] > result["media_seconds"] * 1.15 + 0.5
+        ):
             result.update(ok=False, error="分片读取慢于播放时长")
         duration = result.get("video", {}).get("duration", 0)
         # 实时 TS 本来就按播放速度推送，连接和解码耗时不是下载速率。

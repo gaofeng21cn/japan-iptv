@@ -257,6 +257,8 @@ def probe(channel):
                 segments.append({"bytes": len(sample), "seconds": cost})
                 video = media_info(init + sample)
             row.update(ok=True, video=video, segments=segments,
+                       read_seconds=round(sum(s["seconds"] for s in segments), 3),
+                       media_seconds=sum(durations[-len(segments):]),
                        slow_segments=sum(s["seconds"] > durations[-len(segments)+i]
                                          for i, s in enumerate(segments)))
             return row

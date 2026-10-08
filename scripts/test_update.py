@@ -89,6 +89,16 @@ class Selection(unittest.TestCase):
         with patch.object(maintain, "probe_ts", return_value=result):
             self.assertFalse(update.probe_auto({"transport": "mpegts"})["ok"])
 
+    def test_hls_buffer_absorbs_one_slow_segment_but_not_sustained_slowness(self):
+        result = {"ok": True, "slow_segments": 1, "read_seconds": 12,
+                  "media_seconds": 15, "video": {}}
+        with patch.object(maintain, "probe", return_value=result):
+            self.assertTrue(update.probe_auto({"transport": "hls"})["ok"])
+        result = {"ok": True, "slow_segments": 3, "read_seconds": 25,
+                  "media_seconds": 15, "video": {}}
+        with patch.object(maintain, "probe", return_value=result):
+            self.assertFalse(update.probe_auto({"transport": "hls"})["ok"])
+
 
 class EndToEnd(unittest.TestCase):
     @classmethod
