@@ -1,0 +1,18 @@
+{
+  "confirmations": 2,
+  "attempts": 3,
+  "remove_after_failures": 2,
+  "workers": 6,
+  "max_candidates_per_channel": 24,
+  "channels": [
+    {"id": "JOAKDTV.jp", "name": "NHK総合 東京", "aliases": ["NHK G", "NHK総合", "NHK総合 東京", "NHK東京・総合"]},
+    {"id": "JOABDTV.jp", "name": "NHK Eテレ", "aliases": ["NHK E", "NHK Eテレ", "NHK教育", "NHK東京・教育"]},
+    {"id": "JOAXDTV.jp", "name": "日本テレビ", "aliases": ["NTV", "Nippon TV", "日本テレビ", "日本TV", "日テレ"]},
+    {"id": "JOEXDTV.jp", "name": "テレビ朝日", "aliases": ["TV Asahi", "テレビ朝日"]},
+    {"id": "JORXDTV.jp", "name": "TBS", "aliases": ["TBS", "TBSテレビ"]},
+    {"id": "JOTXDTV.jp", "name": "テレビ東京", "aliases": ["TV Tokyo", "テレビ東京", "テレ東"]},
+    {"id": "JOCXDTV.jp", "name": "フジテレビ", "aliases": ["Fuji TV", "Fuji Television", "フジテレビ"]},
+    {"id": "JOMXDTV.jp", "name": "TOKYO MX1", "aliases": ["TOKYO MX", "TOKYO MX1"]},
+    {"id": "JOMXDTV2.jp", "name": "TOKYO MX2", "aliases": ["TOKYO MX2"]}
+  ]
+}

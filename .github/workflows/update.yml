@@ -1,0 +1,61 @@
+name: Update playlist automatically
+on:
+  schedule:
+    - cron: '15 23 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only check and select streams; do not publish'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: playlist-update
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install media tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Verify updater
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - name: Collect, check and select streams
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=()
+          if [[ "$DRY_RUN" == 'true' ]]; then
+            args+=(--dry-run)
+          fi
+          python3 scripts/update.py --site github "${args[@]}"
+      - name: Verify generated playlist
+        run: python3 scripts/maintain.py build --verify
+      - name: Publish updated subscription
+        if: inputs.dry_run != true
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add channels.json playlist.m3u README.md automation-state.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: update verified playlist'
+            git push origin HEAD:main
+          fi
+      - name: Save check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playlist-update-report
+          path: reports/update.json
+          retention-days: 14
+          if-no-files-found: warn

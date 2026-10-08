@@ -169,6 +169,8 @@ def audit(site):
 def discover():
     client, results = opener(), []
     for source in json.loads((ROOT / "sources.json").read_text()):
+        if not source.get("enabled", True):
+            continue
         try:
             body, _, _ = fetch(client, source["url"])
             if not body.lstrip().startswith(b"#EXTM3U"):
@@ -192,19 +194,31 @@ def safe_error(e):
 
 def media_info(body):
     ffprobe = shutil.which("ffprobe")
-    if not ffprobe:
-        raise ValueError("缺少 ffprobe，无法确认视频，不能判为通过")
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffprobe or not ffmpeg:
+        raise ValueError("缺少 ffprobe 或 ffmpeg，无法确认视频，不能判为通过")
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "sample.bin"
         path.write_bytes(body)
-        p = subprocess.run([ffprobe, "-v", "error", "-show_streams", "-of", "json", str(path)],
+        p = subprocess.run([ffprobe, "-v", "error", "-show_streams", "-show_format", "-of", "json", str(path)],
                            capture_output=True, timeout=20)
         data = json.loads(p.stdout or b"{}")
         videos = [s for s in data.get("streams", []) if s.get("codec_type") == "video"]
         if p.returncode or not videos:
             raise ValueError("响应中未识别出可播放的视频")
+        decoded = subprocess.run(
+            [ffmpeg, "-nostdin", "-v", "error", "-threads", "1", "-i", str(path),
+             "-map", "0:v:0", "-frames:v", "1", "-f", "framemd5", "pipe:1"],
+            capture_output=True, timeout=20,
+        )
+        if decoded.returncode or not any(
+            line and not line.startswith(b"#") for line in decoded.stdout.splitlines()
+        ):
+            raise ValueError("视频样本无法解码出画面")
         v = videos[0]
-        return {k: v.get(k) for k in ("codec_name", "width", "height", "r_frame_rate")}
+        result = {k: v.get(k) for k in ("codec_name", "width", "height", "r_frame_rate")}
+        result["duration"] = float(data.get("format", {}).get("duration", 0))
+        return result
 
 
 def probe(channel):
@@ -226,14 +240,22 @@ def probe(channel):
                 continue
             if "#EXTINF:" not in text:
                 raise ValueError("没有视频分片")
+            if "#EXT-X-ENDLIST" in text:
+                raise ValueError("播放列表已结束，不是持续直播")
+            if "#EXT-X-BYTERANGE" in text:
+                raise ValueError("分片字节范围暂不支持自动检查")
             durations = [float(x) for x in re.findall(r"#EXTINF:([\d.]+)", text)]
             if "#EXT-X-KEY:" in text and 'METHOD=NONE' not in text:
                 raise ValueError("加密 HLS 需由播放器进一步验证")
+            init = b""
+            init_match = re.search(r'#EXT-X-MAP:.*?URI="([^"]+)"', text)
+            if init_match:
+                init, _, _ = fetch(client, urllib.parse.urljoin(url, init_match.group(1)))
             segments = []
             for segment in links[-3:]:
                 sample, _, cost = fetch(client, urllib.parse.urljoin(url, segment))
                 segments.append({"bytes": len(sample), "seconds": cost})
-                video = media_info(sample)
+                video = media_info(init + sample)
             row.update(ok=True, video=video, segments=segments,
                        slow_segments=sum(s["seconds"] > durations[-len(segments)+i]
                                          for i, s in enumerate(segments)))
@@ -251,9 +273,12 @@ def probe_ts(channel):
         req = urllib.request.Request(channel["url"], headers={"User-Agent": "Mozilla/5.0"})
         started = time.monotonic()
         with client.open(req, timeout=15) as r:
+            read_started = time.monotonic()
             body = r.read(2_000_000)
+        finished = time.monotonic()
         row.update(ok=True, video=media_info(body), bytes=len(body),
-                   sample_seconds=round(time.monotonic() - started, 3))
+                   read_seconds=round(finished - read_started, 3),
+                   sample_seconds=round(finished - started, 3))
     except Exception as e:
         row["error"] = safe_error(e)
     return row

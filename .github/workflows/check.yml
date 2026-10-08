@@ -13,15 +13,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install media tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Verify generated playlist and negative playback cases
         run: |
           python3 scripts/maintain.py build --verify
           python3 -m unittest discover -s scripts -p 'test_*.py'
       - name: Audit enabled baselines
         run: python3 scripts/maintain.py audit
-      - name: Install media probe
-        if: github.event_name == 'workflow_dispatch'
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: GitHub-hosted stream check
         if: github.event_name == 'workflow_dispatch'
         run: python3 scripts/maintain.py check --site github
