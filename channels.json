@@ -12,17 +12,6 @@
       "transport": "mpegts"
     },
     {
-      "id": "JOAKDTV.jp.backup",
-      "name": "NHK総合 東京 备用",
-      "group": "备用",
-      "url": "https://nhk4.mov3.co/hls/nhk.m3u8",
-      "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
-      "resolution": "960×540",
-      "fps": "25/1",
-      "notes": [],
-      "transport": "hls"
-    },
-    {
       "id": "JOAXDTV.jp",
       "name": "日本テレビ",
       "group": "日本地上波",
