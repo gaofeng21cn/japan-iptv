@@ -10,65 +10,15 @@
       "fps": "30000/1001",
       "notes": [],
       "transport": "mpegts"
-    },
-    {
-      "id": "JOAXDTV.jp",
-      "name": "日本テレビ",
-      "group": "日本地上波",
-      "url": "https://ntv5.mov3.co/hls/ntv.m3u8",
-      "source": "https://mov3.co/embedntv.html",
-      "resolution": "960×540",
-      "fps": "25/1",
-      "notes": [],
-      "transport": "hls"
-    },
-    {
-      "id": "JOEXDTV.jp",
-      "name": "テレビ朝日",
-      "group": "日本地上波",
-      "url": "https://tvasahi.mov3.co/hls/tvasahi.m3u8",
-      "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
-      "resolution": "960×540",
-      "fps": "25/1",
-      "notes": [],
-      "transport": "hls"
-    },
-    {
-      "id": "JORXDTV.jp",
-      "name": "TBS",
-      "group": "日本地上波",
-      "url": "https://tbs5.mov3.co/hls/tbs.m3u8",
-      "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
-      "resolution": "960×540",
-      "fps": "25/1",
-      "notes": [],
-      "transport": "hls"
-    },
-    {
-      "id": "JOTXDTV.jp",
-      "name": "テレビ東京",
-      "group": "日本地上波",
-      "url": "https://tvtokyo.mov3.co/hls/tvtokyo.m3u8",
-      "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
-      "resolution": "960×540",
-      "fps": "25/1",
-      "notes": [],
-      "transport": "hls"
-    },
-    {
-      "id": "JOCXDTV.jp",
-      "name": "フジテレビ",
-      "group": "日本地上波",
-      "url": "https://fujitv4.mov3.co/hls/fujitv.m3u8",
-      "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_japan.m3u8",
-      "resolution": "960×540",
-      "fps": "25/1",
-      "notes": [],
-      "transport": "hls"
     }
   ],
   "missing": [
     "NHK Eテレ",
+    "日本テレビ",
+    "テレビ朝日",
+    "TBS",
+    "テレビ東京",
+    "フジテレビ",
     "TOKYO MX1",
     "TOKYO MX2"
   ],

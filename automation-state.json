@@ -1,9 +1,3 @@
 {
-  "failures": {
-    "9cd2b1b86a77b4f060d4e100926142d1e77e0a507f2632d0f94b3db4a9941cb5": 1,
-    "952c53042c7ccf4045541e2a0996ec4f8076a9db34a4951df73e7d28ac64f85f": 1,
-    "9676b9aecbb58e23e76cbce209172c9d6b95ae690650acca1bc0209b1731deeb": 1,
-    "8240dcdfda79bf680be46cdc37a93692dede3f33ce7ba918acfdc0170868aece": 1,
-    "ce393ebeaee1fa4ba2068494ff07c000a5ca84c41eb5e2bb87c3d124d80b9248": 1
-  }
+  "failures": {}
 }
